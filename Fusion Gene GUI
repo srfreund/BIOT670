@@ -1,27 +1,9 @@
 #Use tkinter to create GUI in Python
+
 import tkinter as tk
+window= tk.Tk()
 
-#create background using photo image. figure out PIL download
-"""from tkinter import *
 
-from pillow import ImageTk,Image
-
-root=Tk()
-
-#set width and height
-
-canvas=Canvas(root,width=300,height=160)
-
-#give this image path. image should be in png format.
-
-#Example: "C:\\Users\\ASUS\\OneDrive\\Pictures\\image.png"
-
-image=ImageTk.PhotoImage(Image.open("C:\\Users\\samanthafreund\\Documents\\BIOT670\\gene.png"))
-
-canvas.create_image(0,0,anchor=NW,image=image)
-canvas.pack()
-root.mainloop()
-"""
 border_effects = { #creates dictioary whose keys are name of relief effects
     "flat": tk.FLAT,
     "sunken": tk.SUNKEN,
@@ -29,7 +11,7 @@ border_effects = { #creates dictioary whose keys are name of relief effects
     "groove": tk.GROOVE,
     "ridge": tk.RIDGE,
 }
-window= tk.Tk()
+
 """
 for relief_name, relief in border_effects.items():
     frame = tk.Frame(master=window, relief=relief, borderwidth=5)
@@ -37,20 +19,33 @@ for relief_name, relief in border_effects.items():
     label = tk.Label(master=frame, text=relief_name)
     label.pack() (add different effects to text)
 """
+
+
+from tkinter import *
+from tkinter import messagebox
+
+
+C = Canvas(window, bg="blue", height=400, width=200)
+filename = PhotoImage(file = "/Users/samanthafreund/desktop/gene.png")
+background_label = Label(window, image=filename)
+background_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+
+
 frame_welc=tk.Frame()   #adding labels to frames fits them perfectly to screen
 frame_imp= tk.Frame()
 frame_imp_btn=tk.Frame()
 
 lab_welcome= tk.Label( #WElcome label here
     master=frame_welc,
-    text= "Hello! Welcome to the fusion gene visualizer!",
+    text= "Welcome to the fusion gene visualizer!", font=("Courier", 34),
     foreground= "black", # set the text color to blue, shortcut fg
-    background = "cornflower blue", #set background color, shortcut bg
+    background = "plum1", #set background color, shortcut bg
 )
 lab_welcome.pack() 
 lab_import= tk.Label( #directions here
     master=frame_imp,
-    text= "Directions: Import your sequence location file",
+    text= "Directions: Import your sequence location file", font=("Courier", 34),
     fg= "black",
     bg ="tan1"
 )
@@ -70,15 +65,21 @@ from tkinter.filedialog import askopenfile
 # file in read mode and only Python files 
 # will be opened 
 def open_file(): 
-    file = askopenfile(mode ='r', filetypes =[('Python Files', '*.py')]) 
+    file = askopenfile(mode ='r',
+        filetypes =[('Python Files', '*.py')]) #can change file types
     if file is not None: 
         content = file.read() 
         print(content) 
 #can adjust code here on what we want the program to do with the opened file
 #Right now it is set just to read it in
-btn_import = tk.Button(master=frame_imp_btn, text ='Import', command = lambda:open_file()) 
+btn_import = tk.Button(
+    master=frame_imp_btn,
+    text ='Import',
+    font=("Courier", 34),
+    bg= "bisque3",
+    command = lambda:open_file()) 
 
-
+C.pack()
 lab_import.pack()
 frame_welc.pack()
 frame_imp.pack()
