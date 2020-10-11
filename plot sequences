@@ -1,0 +1,108 @@
+
+"""
+Fusion Gene Visualizer with Scroll Bar
+@author: samanthafreund
+"""
+
+import matplotlib.pyplot as plt
+from dna_features_viewer import GraphicFeature, GraphicRecord
+import sys
+import matplotlib
+
+
+#Also could use other GUI PyQT5 instead of Tkinter
+from PyQt5.QtWidgets import (
+                        QWidget,
+                        QApplication,
+                        QMainWindow,
+                        QVBoxLayout,
+                        QScrollArea,
+                    )
+
+from matplotlib.backends.backend_qt5agg import (
+                        FigureCanvasQTAgg as FigCanvas,
+                        NavigationToolbar2QT as NabToolbar,
+                    )
+
+
+# Make sure that we are using QT5
+matplotlib.use('Qt5Agg')
+
+
+#Figure out how to take imported file from Tkinter gui to here
+#Should use all PyQT? create GUI there?
+#Start and end positions imported from parsed file (S:A?)
+record = GraphicRecord(sequence=250 * "ATGC", features=[
+    GraphicFeature(start=20, end=500, strand=+1, color="#ffcccc",
+                   label="Reference Sequence"),
+    GraphicFeature(start=400, end=700, strand=-1, color="#cffccc",
+                   label="Gene 1"),
+    GraphicFeature(start=600, end=900, strand=+1, color="#ccccff",
+                   label="Gene 2")
+])
+
+#Want to add scroll bar here
+zoom_start, zoom_end = 398, 428  # coordinates of the "detail"
+cropped_record = record.crop((zoom_start, zoom_end))
+
+
+#Will plot two figures
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 2))
+
+# PLOT THE WHOLE SEQUENCE (this be reference?)
+
+ax1.set_title("Reference", loc='left', weight='bold')
+record.plot(ax=ax1)
+ax1.fill_between((zoom_start, zoom_end), +1000, -1000, alpha=0.15)
+
+# PLOT THE SEQUENCE DETAILS (Here would zoom on fusion portion)
+
+#Here is also translates into amino acids 
+cropped_record.plot_translation(ax=ax2, location=(408, 423),
+                                fontdict={'weight': 'bold'})
+cropped_record.plot(ax=ax2, plot_sequence=True)
+ax2.set_title("Fusion Gene detail", loc='left', weight='bold')
+
+
+
+def main():
+    app = QApplication(sys.argv)
+    window = MyApp(fig)
+    sys.exit(app.exec_())
+
+class MyApp(QWidget):
+    def __init__(self, fig):
+        super().__init__()
+        self.title = 'Fusion Gene Visualizer Here!'
+        self.posXY = (700, 40)
+        self.windowSize = (1200, 800)
+        self.fig = fig
+        self.initUI()
+
+    def initUI(self):
+        QMainWindow().setCentralWidget(QWidget())
+
+        self.setLayout(QVBoxLayout())
+        self.layout().setContentsMargins(0, 0, 0, 0)
+        self.layout().setSpacing(0)
+
+        canvas = FigCanvas(self.fig)
+        canvas.draw()
+
+        scroll = QScrollArea(self)
+        scroll.setWidget(canvas)
+
+        nav = NabToolbar(canvas, self)
+        self.layout().addWidget(nav)
+        self.layout().addWidget(scroll)
+
+        self.show_basic()
+
+    def show_basic(self):
+        self.setWindowTitle(self.title)
+        self.setGeometry(*self.posXY, *self.windowSize)
+        self.show()
+
+
+if __name__ == '__main__':
+    main()
